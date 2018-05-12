@@ -16,7 +16,7 @@ def GetFilesInFolderWithEnding(folder, ext, fullPath):
 	    Returns
 	    -------
 	    outlist : list of strings
-                CAUTION: if len(outlist) == 1, then outlist is a variable, will be returned with a print-statement
+            CAUTION: if len(outlist) == 1, then outlist is a variable, will be returned with a print-statement
     '''
 
     outlist = []
