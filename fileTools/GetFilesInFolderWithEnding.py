@@ -1,24 +1,22 @@
 import os
 
 def GetFilesInFolderWithEnding(folder, ext, fullPath):
-    '''
-    Function that returns all filenames in a folder that match the extension
+    ''' Function that returns all filenames in a folder that match the extension
 
-    Parameters
-	----------
-	folder : string (required)
-		path, through which we are searching
-	ext : string (required)
-		extension of the files that we want to search for
-	fullPath : bool (optional)
-		option to return just the file names or the entire file path
-		if True, then all matched files are concatenated with 'folder'
+            Parameters
+	    ----------
+	    folder : string (required)
+		    path, through which we are searching
+	    ext : string (required)
+		    extension of the files that we want to search for
+	    fullPath : bool (required)
+		    option to return just the file names or the entire file path
+		    if True, then all matched files are concatenated with 'folder'
 
-	Returns
-	-------
-	outlist : list of strings
-        CAUTION: if len(outlist) == 1, then outlist is a variable, will be returned with a print-statement
-
+	    Returns
+	    -------
+	    outlist : list of strings
+                CAUTION: if len(outlist) == 1, then outlist is a variable, will be returned with a print-statement
     '''
 
     outlist = []
