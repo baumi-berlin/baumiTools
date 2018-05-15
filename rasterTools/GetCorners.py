@@ -1,7 +1,7 @@
 import gdal
 
 def GetCorners(path):
-    ''' Function that calculate the xy-coordinates of the extenet of a raster file
+    ''' Function that calculates the xy-coordinates of the extent of a raster file
 
     Parameters
     -----------
