@@ -9,8 +9,10 @@ def Geom_Raster_to_np(geom, raster):
 
     PARAMETERS
     -----------
-    geom : geometry of the feature
-    raster: raster as a gdal-object
+    geom : geom object (required)
+        geometry of the feature
+    raster: gdal object (required)
+        raster as a gdal-object (through gdal.Open())
 
     RETURNS
     -------
