@@ -1,4 +1,4 @@
-import ogr, osr
+import ogr, osr, gdal
 import numpy as np
 
 def Geom_Raster_to_np(geom, raster):
