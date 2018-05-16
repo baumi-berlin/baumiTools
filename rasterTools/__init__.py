@@ -9,3 +9,4 @@ from .CompressENVI import CompressENVI
 from .OpenRasterToMemory import OpenRasterToMemory
 from .BuildPyramids import BuildPyramids
 from .Reclassify import ReclassifyRaster
+from .GeomRasToNP import Geom_Raster_to_np
