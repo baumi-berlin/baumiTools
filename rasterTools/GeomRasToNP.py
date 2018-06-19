@@ -1,5 +1,6 @@
 import ogr, osr, gdal
 import numpy as np
+import math
 
 def Geom_Raster_to_np(geom, raster):
     '''
@@ -39,14 +40,14 @@ def Geom_Raster_to_np(geom, raster):
     x_min, x_max, y_min, y_max = geom.GetEnvelope()
     gt = raster.GetGeoTransform()
     pr = raster.GetProjection()
-    x_res = int((abs(x_max - x_min)) / gt[1])
-    y_res = int((abs(y_max - y_min)) / gt[1])
+    x_res = math.ceil((abs(x_max - x_min)) / gt[1])
+    y_res = math.ceil((abs(y_max - y_min)) / gt[1])
     new_gt = (x_min, gt[1], 0, y_max, 0, -gt[1])
     lyr_ras = gdal.GetDriverByName('MEM').Create('', x_res, y_res, 1, gdal.GDT_Byte)
     lyr_ras.GetRasterBand(1).SetNoDataValue(0)
     lyr_ras.SetProjection(pr)
     lyr_ras.SetGeoTransform(new_gt)
-    gdal.RasterizeLayer(lyr_ras, [1], geom_lyr, burn_values=[1])
+    gdal.RasterizeLayer(lyr_ras, [1], geom_lyr, burn_values=[1], options = ['ALL_TOUCHED=TRUE'])
     geom_np = np.array(lyr_ras.GetRasterBand(1).ReadAsArray())
     # Now load the raster into the array --> only take the area that is 1:1 the geom-layer (see Garrard p.195)
     inv_gt = gdal.InvGeoTransform(gt)
