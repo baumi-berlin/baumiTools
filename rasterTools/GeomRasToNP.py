@@ -25,7 +25,10 @@ def Geom_Raster_to_np(geom, raster):
     '''
     # Make a coordinate transformation of the geom-srs to the raster-srs
     pol_srs = geom.GetSpatialReference()
+    #print(pol_srs)
     ras_srs = raster.GetProjection()
+    #print(ras_srs)
+    #exit(0)
     target_SR = osr.SpatialReference()
     target_SR.ImportFromWkt(ras_srs)
     srs_trans = osr.CoordinateTransformation(pol_srs, target_SR)
