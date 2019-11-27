@@ -1,9 +1,10 @@
-import ogr, gdal, osr
+#import ogr, gdal, osr
+from osgeo import ogr, gdal, osr
 import numpy as np
-#import baumiTools as bt
+import baumiTools as bt
 
 def ClipRasterBySHP(SHP, raster, mask):
-
+    print("Clip raster by shapefile")
     drvMemR = gdal.GetDriverByName('MEM')
     drvMemV = ogr.GetDriverByName('Memory')
 ## DO SOME PRE-THINGS
@@ -54,7 +55,7 @@ def ClipRasterBySHP(SHP, raster, mask):
     newX = xOrigin + i1*pixelSize
     newY = yOrigin - j1*pixelSize
 # Read the raster into an array based on the raster coordinates, then create output-file in memory
-    array = rb.ReadAsArray(i1, j1, colsNew, rowsNew)
+    #array = rb.ReadAsArray(i1, j1, colsNew, rowsNew)
 # If mask = TRUE, then additionally mask the areas outside the polygon
     if mask == True:
 # Re-project layer into CS of the raster
@@ -79,11 +80,21 @@ def ClipRasterBySHP(SHP, raster, mask):
 # Create a array mask from the temporary shapefile
         shpRas = drvMemR.Create('', colsNew, rowsNew, gdal.GDT_Byte)
         shpRas.SetProjection(ras_pr)
-        shpRas.SetGeoTransform((newX, pixelSize, ras_gt[2], newY, ras_gt[4], -pixelSize))
+        shpRas.SetGeoTransform((newX, pixelSize, 0, newY, 0, -pixelSize))
         shpRasBand = shpRas.GetRasterBand(1)
-        shpRasBand.SetNoDataValue(0)
-        gdal.RasterizeLayer(shpRas, [1], tmpLYR, burn_values=[1])
+        #shpRasBand.SetNoDataValue(0)
+        gdal.RasterizeLayer(shpRas, [1], tmpLYR, burn_values=[1], options=["ALL_TOUCHED=TRUE"])
+
+
+        root_folder = "E:/Baumann/_ANALYSES/AnnualLandCoverChange_CHACO/"
+        classRun = 6
+        out_root = root_folder + "04_Map_Products/Run" + str("{:02d}".format(classRun)) + "/"
+        outname = out_root + "Run" + str("{:02d}".format(classRun)) + "maskkk.tif"
+        bt.baumiRT.CopyMEMtoDisk(shpRas, outname)
+        exit(0)
+
         shpArray = shpRasBand.ReadAsArray()
+
 # Mask the array
         array = np.where((shpArray == 0), 0, array)
     else:

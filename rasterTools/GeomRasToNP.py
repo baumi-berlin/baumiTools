@@ -1,6 +1,7 @@
 import ogr, osr, gdal
 import numpy as np
 import math
+import baumiTools as bt
 
 def Geom_Raster_to_np(geom, raster):
     '''
@@ -44,7 +45,7 @@ def Geom_Raster_to_np(geom, raster):
     y_res = math.ceil((abs(y_max - y_min)) / gt[1])
     new_gt = (x_min, gt[1], 0, y_max, 0, -gt[1])
     lyr_ras = gdal.GetDriverByName('MEM').Create('', x_res, y_res, 1, gdal.GDT_Byte)
-    lyr_ras.GetRasterBand(1).SetNoDataValue(0)
+    #lyr_ras.GetRasterBand(1).SetNoDataValue(0)
     lyr_ras.SetProjection(pr)
     lyr_ras.SetGeoTransform(new_gt)
     gdal.RasterizeLayer(lyr_ras, [1], geom_lyr, burn_values=[1], options = ['ALL_TOUCHED=TRUE'])
@@ -53,13 +54,13 @@ def Geom_Raster_to_np(geom, raster):
     inv_gt = gdal.InvGeoTransform(gt)
     offsets_ul = gdal.ApplyGeoTransform(inv_gt, x_min, y_max)
     off_ul_x, off_ul_y = map(int, offsets_ul)
-    raster_np = np.array(raster.GetRasterBand(1).ReadAsArray(off_ul_x, off_ul_y, x_res, y_res))
+    raster_np = np.array(raster.GetRasterBand(1).ReadAsArray(off_ul_x, off_ul_y, x_res, y_res))   
     ## Just for checking if the output is correct --> write it to disc. Outcommented here
-    # val_ras = gdal.GetDriverByName('MEM').Create('', x_res, y_res, 1, gdal.GDT_Byte)
-    # val_ras.SetProjection(pr)
-    # val_ras.SetGeoTransform(new_gt)
-    # val_ras.GetRasterBand(1).WriteArray(raster_np, 0, 0)
-    # bt.baumiRT.CopyMEMtoDisk(lyr_ras, "D:/baumamat/Warfare/_Variables/Forest/_tryout2.tif")
-    # bt.baumiRT.CopyMEMtoDisk(val_ras, "D:/baumamat/Warfare/_Variables/Forest/_tryout3.tif")
-    # exit(0)
+    #val_ras = gdal.GetDriverByName('MEM').Create('', x_res, y_res, 1, gdal.GDT_UInt16)
+    #val_ras.SetProjection(pr)
+    #val_ras.SetGeoTransform(new_gt)
+    #val_ras.GetRasterBand(1).WriteArray(raster_np, 0, 0)
+    #bt.baumiRT.CopyMEMtoDisk(lyr_ras, "E:/Baumann/_ANALYSES/geom.tif")
+    #bt.baumiRT.CopyMEMtoDisk(val_ras, "E:/Baumann/_ANALYSES/raster.tif")
+    #exit(0)
     return geom_np, raster_np
