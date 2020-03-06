@@ -1,13 +1,31 @@
-def Calculate_Seasonal_Median(year, startMonth, endMonth, roi=None, mask_clouds=True, mask_water=False, mask_snow=False, mask_fill=True, harmonize_l8=True):
-	import ee
-	# Convert the information on year, startMonth, endMonth to a date for the filter
-	start = ee.Date.fromYMD(ee.Number(year).subtract(ee.Number(1)), startMonth, 1)
-	end = ee.Date.fromYMD(ee.Number(year).add(ee.Number(1)), endMonth, 31)
-	#start = str(year) + "-" + "{0:0=2d}".format(startMonth) + "-01"
-	#end = str(year) + "-" + "{0:0=2d}".format(endMonth) + "-31"
+def Calculate_Seasonal_Median(year, startMonth, endMonth, roi=None, path=None, row=None, mask_clouds=True, mask_water=False, mask_snow=False, mask_fill=True, harmonize_l8=True):
+	'''
+	Function that calculates a seasonal mean for an individual year in google earth engine
+	Parameters:
+	------------
+	year (integer): Year for which the composite should be generated (required)
+	startMonth (integer): starting month of the season (required)
+	endMonth (integer): ending month of the season (required)
+	roi: region of interest. Defines the boundary for which the composite will be calculated. (optional, defaults to None)
+	path (integer): WRS2-path of the Landsat footprint (optional, defaults to None)
+	row (integer): WRS2-path of the Landsat footprint (optional, defaults to None)
 	
-	# Select all the images, convert 
-	select_bands = ['B', 'G', 'R', 'NIR', 'SWIR1', 'SWIR2', 'pixel_qa']
+	Returns:
+	---------
+	image: Median of the six multispectral bands from all Landsat observations that fall inside the defined year/months
+	
+	'''
+	import ee
+	# Convert the information on year, startMonth, endMonth to a date for the filter --> define lastday of endMonth based on how many days are in that month
+	if endMonth in [4,6,9,11]:
+		lastDay = 30
+	if endMonth in [1,3,5,7,8,10,12]:
+		lastDay = 31
+	if endMonth == 2:
+		lastDay = 28
+	start = ee.Date.fromYMD(year, startMonth, 1)
+	end = ee.Date.fromYMD(year, endMonth, lastDay)
+	
 	# band names in input and output collections
 	bands = ['B1', 'B2', 'B3', 'B4', 'B5', 'B7', 'B6', 'pixel_qa']
 	band_names = ['B', 'G', 'R', 'NIR', 'SWIR1', 'SWIR2', 'T', 'pixel_qa']
@@ -68,6 +86,12 @@ def Calculate_Seasonal_Median(year, startMonth, endMonth, roi=None, mask_clouds=
 		l7 = remove_double_counts(ee.ImageCollection('LANDSAT/LE07/C01/T1_SR').select(bands, band_names).filterBounds(roi).filterDate(start, end).map(apply_masks))
 		l8 = remove_double_counts(ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').select(l8bands, l8band_names).filterBounds(roi).filterDate(start, end).map(apply_masks))
 		l8h = ee.ImageCollection(ee.Algorithms.If(harmonize_l8, l8.map(l8_harmonize), l8))
+	elif path!= None and row != None:
+		l4 = remove_double_counts(ee.ImageCollection('LANDSAT/LT04/C01/T1_SR').select(bands, band_names).filterDate(start, end).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).map(apply_masks))
+		l5 = remove_double_counts(ee.ImageCollection('LANDSAT/LT05/C01/T1_SR').select(bands, band_names).filterDate(start, end).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).map(apply_masks))
+		l7 = remove_double_counts(ee.ImageCollection('LANDSAT/LE07/C01/T1_SR').select(bands, band_names).filterDate(start, end).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).map(apply_masks))
+		l8 = remove_double_counts(ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').select(l8bands, l8band_names).filterBounds(roi).filterDate(start, end).filter(ee.Filter.eq('WRS_PATH', path)).filter(ee.Filter.eq('WRS_ROW', row)).map(apply_masks))
+		l8h = ee.ImageCollection(ee.Algorithms.If(harmonize_l8, l8.map(l8_harmonize), l8))
 	else:
 		l4 = remove_double_counts(ee.ImageCollection('LANDSAT/LT04/C01/T1_SR').select(bands, band_names).filterDate(start, end).map(apply_masks))
 		l5 = remove_double_counts(ee.ImageCollection('LANDSAT/LT05/C01/T1_SR').select(bands, band_names).filterDate(start, end).map(apply_masks))
@@ -75,7 +99,12 @@ def Calculate_Seasonal_Median(year, startMonth, endMonth, roi=None, mask_clouds=
 		l8 = remove_double_counts(ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').select(l8bands, l8band_names).filterBounds(roi).filterDate(start, end).map(apply_masks))
 		l8h = ee.ImageCollection(ee.Algorithms.If(harmonize_l8, l8.map(l8_harmonize), l8))
 	# combine landsat collections
-	landsat = ee.ImageCollection(l4.merge(l5).merge(l7).merge(l8h)).select(select_bands)
+	landsat = ee.ImageCollection(l4.merge(l5).merge(l7).merge(l8h)).select(['B', 'G', 'R', 'NIR', 'SWIR1', 'SWIR2'])
 	# Apply the median reducer
 	median = landsat.reduce(ee.Reducer.median())
+	# Select bands and edit band names
+	timeStamp = "_" + str(year) + "-" + "{0:0=2d}".format(startMonth) + "-" + "{0:0=2d}".format(endMonth)
+	median = median.select(['B_median', 'G_median', 'R_median', 'NIR_median', 'SWIR1_median', 'SWIR2_median']).rename(['B'+timeStamp, 'G'+timeStamp, 'R'+timeStamp, 'NIR'+timeStamp, 'SWIR1'+timeStamp, 'SWIR2'+timeStamp])
+	#if roi!= None:
+	#	median = median.clip(roi)
 	return median
