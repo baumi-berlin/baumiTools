@@ -1,2 +1,3 @@
 
-from .CollectLandsat import Calculate_Seasonal_Median
+from .BuildSeasonalComposites import Calculate_Landsat_Seasonal_Median
+from .BuildSeasonalComposites import Calculate_S2_Seasonal_Median
