@@ -1,4 +1,4 @@
-def Convert_SHP_to_FC(LYR, idField, classLabelField):
+def Convert_SHP_to_FC(LYR, idField, classLabelField, type="point"):
 	import ee
 	import ogr, osr
 	import json
@@ -21,7 +21,10 @@ def Convert_SHP_to_FC(LYR, idField, classLabelField):
 	# Build the EE-feature via the json-conversion
 		geom_json = json.loads(geom.ExportToJson())
 		geom_coord = geom_json['coordinates']
-		geom_EE = ee.Geometry.Polygon(coords=geom_coord)
+		if not type == "point":
+			geom_EE = ee.Geometry.Polygon(coords=geom_coord)
+		else:
+			geom_EE = ee.Geometry.Point(coords=geom_coord)
 	# Create feature
 		eeFeat = ee.Feature(geom_EE, {"ID": pid, "Class": cl})
 		liste.append(eeFeat)
