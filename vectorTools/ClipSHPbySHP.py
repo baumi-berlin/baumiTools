@@ -1,4 +1,4 @@
-import osr, ogr
+from osgeo import osr, ogr
 
 def ClipSHPbySHP(inSHP, clipSHP):
     drvMemV = ogr.GetDriverByName('Memory')

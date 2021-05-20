@@ -1,4 +1,4 @@
-import ogr, osr
+from osgeo import ogr, osr
 
 def AddFieldToSHP(shape, name, type):
     drvMemV = ogr.GetDriverByName('Memory')

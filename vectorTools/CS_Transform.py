@@ -1,4 +1,4 @@
-import osr
+from osgeo import osr
 
 def CS_Transform(geom, LYRto):
     ''' Function that creates the ruling for a coordinate transformation of a geometry to the geometry of a second layer.

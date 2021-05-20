@@ -1,5 +1,4 @@
-import gdal
-import osr
+from osgeo import gdal, osr
 
 def ProjGeometryToRaster(geom, pr):
     ''' Function that build the rule for the coordinate-trnasformation of a geometry to a raster-projection.

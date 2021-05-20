@@ -1,4 +1,4 @@
-import gdal
+from osgeo import ogr, gdal, osr#import gdal
 
 def GetCorners(path):
     ''' Function that calculates the xy-coordinates of the extent of a raster file

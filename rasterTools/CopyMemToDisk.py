@@ -1,4 +1,4 @@
-import gdal
+from osgeo import gdal#import gdal
 
 def CopyMEMtoDisk(memRas, outpath):
     endList = [[".tif", 'GTiff'], [".bsq", "ENVI"], [".img", "HFA"]]

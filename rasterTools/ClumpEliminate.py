@@ -1,4 +1,4 @@
-import gdal
+from osgeo import gdal#import gdal
 
 def ClumpEliminate(rasterPath, neighbors, pxSize):
     drvMemR = gdal.GetDriverByName('MEM')

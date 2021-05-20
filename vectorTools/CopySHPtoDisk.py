@@ -1,4 +1,4 @@
-import ogr
+from osgeo import ogr
 
 def CopySHPDisk(shape, outpath):
     drvV = ogr.GetDriverByName('ESRI Shapefile')

@@ -1,4 +1,4 @@
-import ogr, gdal, osr
+from osgeo import ogr, gdal, osr
 import math
 
 def RasterizeSHP(SHP, field, pxSize):

@@ -1,4 +1,4 @@
-import ogr
+from osgeo import ogr
 
 def CopyToMem(path):
     drvMemV = ogr.GetDriverByName('Memory')

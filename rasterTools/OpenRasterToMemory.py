@@ -1,4 +1,4 @@
-import gdal
+from osgeo import gdal
 
 def OpenRasterToMemory(path):
     drvMemR = gdal.GetDriverByName('MEM')

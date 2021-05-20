@@ -1,4 +1,4 @@
-import ogr, osr, gdal
+from osgeo import ogr, osr, gdal
 import numpy as np
 import math
 import baumiTools as bt
